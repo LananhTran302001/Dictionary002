@@ -1,0 +1,9 @@
+controller\EditPane.class
+controller\SearchPane.class
+controller\ShowTranslationPane.class
+dictionary\Dictionary.class
+dictionary\Word.class
+controller\Container.class
+dictionary\DictionaryManagement.class
+controller\AddNewWordPane.class
+controller\UpgradeWordPane.class
