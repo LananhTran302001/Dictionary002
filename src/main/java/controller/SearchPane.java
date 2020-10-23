@@ -3,25 +3,22 @@ package controller;
 import dictionary.Dictionary;
 import dictionary.DictionaryManagement;
 import dictionary.Word;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
 
 public class SearchPane implements Initializable {
 
@@ -78,7 +75,7 @@ public class SearchPane implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         dictionary.dictionaryLoadFromFile();
-        dictionary.dictionarySaveToFile();
+        //dictionary.dictionarySaveToFile();
         loadListView();
         stopShowingTranslation();
         notifySwitchButton.setSelected(false);
@@ -344,9 +341,12 @@ public class SearchPane implements Initializable {
             Word newWord = new AddNewWordPane().getAcceptWord();
 
             if (newWord != null && !newWord.isEmpty()) {
-                this.dictionary.addWord(newWord);
-                loadListView();
-                createNotifyAlert("Added successfully.");
+                if (this.dictionary.canAddWord(newWord)) {
+                    loadListView();
+                    createNotifyAlert("Added successfully.");
+                } else {
+                    createNotifyAlert("Can not Add! This word has been in the dictionary.");
+                }
             }
 
         } catch (Exception e) {

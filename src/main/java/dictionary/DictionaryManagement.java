@@ -100,7 +100,30 @@ public class DictionaryManagement {
         }
     }
 
+    /**
+     * Say if word can be added , add word.
+     * @param newWord is an input word.
+     * @return true if we can add this word to the dictionary.
+     */
+    public boolean canAddWord(Word newWord) {
+        try {
+            if (!newWord.isEmpty()) {
 
+                int indexInsert = this.findIndexInsert(newWord.getSpelling());
+
+                System.out.println("Insert word at " + indexInsert);
+                if (indexInsert >= 0 && indexInsert <= listWords.size()) {
+                    listWords.add(indexInsert, newWord);
+                    return true;
+                }
+            }
+            return false;
+
+        } catch (NullPointerException exception) {
+            System.out.println("Dictionary management hasn't received any word to add.");
+            return false;
+        }
+    }
 
     /**
      * delete a word has spelling = wordSpelling in list of words.

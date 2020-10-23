@@ -72,6 +72,7 @@ public class UpgradeWordPane {
         layout.setPadding(new Insets(15, 20, 15, 20));
 
         Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/style/editPanesStyle.css");
         addWindow.setScene(scene);
         addWindow.showAndWait();
 

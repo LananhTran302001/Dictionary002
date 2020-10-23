@@ -1,0 +1,11 @@
+.toggle-button {
+    -fx-border-color: #fff;
+    -fx-border-radius: 100%;
+    -fx-background-color: transparent;
+}
+
+toggle-button:hover {
+    -fx-border-color: #fff;
+    -fx-border-radius: 100%;
+    -fx-background-color: #9bc400;
+}

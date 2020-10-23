@@ -27,12 +27,12 @@ public class AlertBox {
         closeButton.setOnAction(event -> alertWindow.close());
 
 
-        VBox layout = new VBox(10);
+        VBox layout = new VBox();
         layout.getChildren().addAll(label, closeButton);
-        layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(10, 10, 10, 10));
 
         Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/style/alertBoxStyle.css");
         alertWindow.setScene(scene);
         alertWindow.showAndWait();
     }

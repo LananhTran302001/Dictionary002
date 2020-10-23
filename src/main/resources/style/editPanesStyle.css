@@ -1,0 +1,19 @@
+VBox {
+    -fx-background-color: #339966;
+    -fx-spacing: 10px;
+    -fx-alignment: CENTER;
+    -fx-font: 14 System;
+}
+
+.button {
+    -fx-border-color: #fff;
+    -fx-background-color: #4d774e;
+    -fx-border-width: 1px;
+    -fx-text-fill: #fff;
+}
+
+.button:hover {
+    -fx-border-color: #fff;
+    -fx-background-color: #f1b24a;
+    -fx-text-fill: #fff;
+}

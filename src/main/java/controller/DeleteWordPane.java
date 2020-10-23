@@ -48,6 +48,7 @@ public class DeleteWordPane {
         layout.setPadding(new Insets(15, 20, 15, 20));
 
         Scene scene = new Scene(layout);
+        scene.getStylesheets().add("/style/editPanesStyle.css");
         deleteWindow.setScene(scene);
         deleteWindow.showAndWait();
 
