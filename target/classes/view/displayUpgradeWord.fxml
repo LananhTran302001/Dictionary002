@@ -27,7 +27,7 @@
                         <Label text="Word:" />
                         <TextField fx:id="spellingTextField" maxWidth="-Infinity" prefWidth="450.0" />
                         <Label layoutX="10.0" layoutY="10.0" text="Pronunciation:" />
-                        <TextField fx:id="pronounceTextField" maxWidth="-Infinity" prefWidth="450.0" />
+                        <TextField fx:id="pronunciationTextField" maxWidth="-Infinity" prefWidth="450.0" />
                         <Label text="Sound link:" />
                         <HBox spacing="5.0">
                             <children>
@@ -36,7 +36,7 @@
                             </children>
                         </HBox>
                         <Label layoutX="10.0" layoutY="27.0" text="Meaning:" />
-                        <TextArea fx:id="meaningTextArea" prefHeight="200.0" prefWidth="200.0" />
+                        <TextField fx:id="meaningTextArea" prefHeight="200.0" prefWidth="200.0" />
                     </children>
                     <VBox.margin>
                         <Insets />

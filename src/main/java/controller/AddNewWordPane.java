@@ -4,18 +4,22 @@ import dictionary.Word;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 
-public class AddNewWordPane implements Initializable {
+public class AddNewWordPane {
 
     @FXML
     private TextField spellingTextField;
@@ -24,13 +28,13 @@ public class AddNewWordPane implements Initializable {
     private TextField pronounceTextField;
 
     @FXML
+    private TextArea meaningTextArea;
+
+    @FXML
     private TextField soundLinkTextField;
 
     @FXML
     private Button loadLinkButton;
-
-    @FXML
-    private TextArea meaningTextArea;
 
     @FXML
     private Button addingButton;
@@ -38,24 +42,9 @@ public class AddNewWordPane implements Initializable {
     @FXML
     private Button cancelButton;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation(getClass().getResource("/view/displayAddWord.fxml"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void clear() {
-        spellingTextField.clear();
-        pronounceTextField.clear();
-        meaningTextArea.clear();
-    }
 
     @FXML
-    public void addWord(ActionEvent event) {
+    private void addWord(ActionEvent event) {
         try {
             Word newWord = new Word(
                     spellingTextField.getText(),
@@ -63,28 +52,35 @@ public class AddNewWordPane implements Initializable {
                     meaningTextArea.getText());
 
             if (newWord.isEmpty()) {
+                AlertBox alert = new AlertBox();
+                alert.display("Notification", "Word is empty! Can not be added!");
+                System.out.println("Word is empty! Can not be added!");
                 return;
             }
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/displaySearch.fxml"));
-            Parent root = (Parent) loader.load();
+            Parent searchScene = loader.load();
             SearchPane searchManagement = loader.getController();
-            searchManagement.dictionary.addWord(newWord);
-            searchManagement.loadListView();
+            searchManagement.addWord(newWord);
+            //AlertBox alert = new AlertBox();
+            //alert.display("Notification", "Add word " + newWord.getSpelling() + " successfully.", "OK");
+
 
         } catch (Exception e) {
             System.out.println("Can not add word!");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not add new word!");
+            System.out.println("Error! Can not add new word!");
         }
-
-        clear();
+        this.clear();
     }
+
 
     @FXML
     public void cancel(ActionEvent event) {
         if (event.getSource() == cancelButton) {
-            spellingTextField.clear();
-            pronounceTextField.clear();
-            meaningTextArea.clear();
+            Stage stage = (Stage) cancelButton.getScene().getWindow();
+            stage.close();
         }
     }
 
@@ -93,5 +89,10 @@ public class AddNewWordPane implements Initializable {
 
     }
 
+    public void clear() {
+        spellingTextField.clear();
+        pronounceTextField.clear();
+        meaningTextArea.clear();
+    }
 
 }

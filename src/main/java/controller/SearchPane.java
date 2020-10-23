@@ -15,12 +15,18 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class SearchPane extends Dictionary implements Initializable {
+public class SearchPane implements Initializable {
+
+    private Dictionary dictionary = new Dictionary();
+
+    private Word currentWord = new Word();
 
     // search
     @FXML
@@ -64,9 +70,10 @@ public class SearchPane extends Dictionary implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        dictionaryLoadFromFile();
-        loadListView();
-        stopShowingTranslation();
+        //dictionary.dictionaryLoadFromFile();
+        dictionary.dictionarySaveToFile();
+        //loadListView();
+        //stopShowingTranslation();
     }
 
 
@@ -74,21 +81,27 @@ public class SearchPane extends Dictionary implements Initializable {
     @FXML
     private void clickSearch(ActionEvent event) {
         try {
-            Word result = getChosenWord();
-            showTranslation(result);
+            // get text from textField
+            currentWord = this.dictionary.searchWord(searchTextField.getText());
+            showTranslation(currentWord);
 
         } catch (Exception e) {
-            System.out.println("Error! Can not display word!");
+            System.out.println("Error! Can not search word!");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not search word!");
         }
     }
 
     @FXML
     private void clickWordInListView(MouseEvent event) {
         try {
-            Word result = getChosenWord();
-            showTranslation(result);
+            // get text from listView
+            currentWord = getChosenWord();
+            showTranslation(currentWord);
         } catch (Exception e) {
-            System.out.println("Error! Can not display word!");
+            System.out.println("Error! Can not search word!");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not search word!");
         }
     }
 
@@ -112,6 +125,8 @@ public class SearchPane extends Dictionary implements Initializable {
             }
         } catch (Exception e) {
             System.out.println("Error! Can not load list view.");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not load list view!");
         }
     }
 
@@ -128,6 +143,8 @@ public class SearchPane extends Dictionary implements Initializable {
 
         } catch (Exception e) {
             System.out.println("Error! Can not load list view.");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not load list view!");
         }
     }
 
@@ -145,8 +162,7 @@ public class SearchPane extends Dictionary implements Initializable {
     public Word getChosenWord() {
         try {
 
-            Word chosenWord = this.dictionary.searchWord(getChosenWordSpelling());
-            return chosenWord;
+            return this.dictionary.searchWord(getChosenWordSpelling());
 
         } catch (NullPointerException exception) {
             System.out.println("You've chosen nothing.");
@@ -169,7 +185,6 @@ public class SearchPane extends Dictionary implements Initializable {
 
 
     // translating methods
-    @FXML
     private void stopShowingTranslation() {
         spellingLabel.setText(null);
         pronunciationLabel.setText(null);
@@ -177,13 +192,16 @@ public class SearchPane extends Dictionary implements Initializable {
     }
 
 
-    @FXML
     public void showTranslation(Word translatedWord) {
         try {
-
-            spellingLabel.setText(translatedWord.getSpelling());
-            pronunciationLabel.setText(translatedWord.getPronunciation());
-            meaningLabel.setText(translatedWord.getMeaning());
+            if (translatedWord == null || translatedWord.isEmpty()) {
+                this.stopShowingTranslation();
+                spellingLabel.setText("Not found word.");
+            } else {
+                spellingLabel.setText(translatedWord.getSpelling());
+                pronunciationLabel.setText(translatedWord.getPronunciation());
+                meaningLabel.setText(translatedWord.getMeaning());
+            }
 
         } catch (Exception e) {
             System.out.println("Error! Can not show translation.");
@@ -197,35 +215,66 @@ public class SearchPane extends Dictionary implements Initializable {
 
     // edit methods
     @FXML
-    void clickAddButton(ActionEvent event) {
+    private void clickDeleteButton(ActionEvent event) {
+        if (currentWord == null || currentWord.isEmpty()) {
+            AlertBox alertNull = new AlertBox();
+            alertNull.display("Notification", "There is no word to delete.");
+            return;
+        }
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/displayAddWord.fxml"));
-            Parent addWordScene = (Parent) fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Add new word");
-            stage.setScene(new Scene(addWordScene));
-            stage.show();
-            //AddNewWordPane addNewWordPane = fxmlLoader.getController();
-            //Word temp = addNewWordPane.getAddedWord();
-
+            openNewWindow("Delete", "/view/displayDeleteWord.fxml");
         } catch (Exception e) {
-            System.out.println("Error! Can not load new window.");
+            System.out.println("Error! Can not delete word.");
+            AlertBox alertNull = new AlertBox();
+            alertNull.display("Notification", "Error! Can not delete word!");
         }
     }
 
     @FXML
-    void clickDeleteButton(ActionEvent event) {
+    private void clickAddButton(ActionEvent event) {
+        openNewWindow("Add", "/view/displayAddWord.fxml");
+    }
+
+    @FXML
+    private void clickUpgradeButton(ActionEvent event) {
+        openNewWindow("Upgrade", "/view/displayUpgradeWord.fxml");
+    }
+
+    private void openNewWindow(String title, String pathFxml) {
         try {
-            String spelling = this.getChosenWordSpelling();
-            dictionary.deleteWord(spelling);
-            loadListView();
-            System.out.println("Successfully delete !.");
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(pathFxml));
+            Parent scene = (Parent) fxmlLoader.load();
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(scene));
+            stage.show();
+
         } catch (Exception e) {
-            System.out.println("Error! Can not delete word.");
+            System.out.println("Error! Can not load new window.");
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", "Error! Can not load new window!");
         }
     }
 
+    // called back, newWord is legal for sure
+    public void addWord(Word newWord) {
+        dictionary.addWord(newWord);
+        this.reset();
+    }
 
-    public void clickUpgradeButton(ActionEvent event) {
+    public void deleteWord() {
+        dictionary.deleteWord(currentWord);
+        this.reset();
+    }
+
+    public void upgradeWord(String oldWord, Word newWord) {
+        dictionary.upgradeWord(oldWord, newWord);
+        this.reset();
+    }
+
+    public void reset() {
+        //dictionary.dictionarySaveToFile();
+        //dictionary.dictionaryLoadFromFile("/data/u.txt");
+        loadListView(searchTextField.getText());
     }
 }

@@ -73,7 +73,7 @@ public class Word {
      * check if a word is empty (doesn't have spelling or meaning)
      */
     public boolean isEmpty() {
-        return (spelling == null || meaning == null);
+        return (spelling == null || meaning == null || spelling.length() < 1 || meaning.length() < 1);
     }
 
     /**

@@ -1,18 +1,23 @@
 package dictionary;
 
-import java.io.*;
 
-public class Dictionary {
-    public DictionaryManagement dictionary = new DictionaryManagement();
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class Dictionary extends DictionaryManagement {
 
 
     /**
      * load data from a file txt.
      */
-    public void dictionaryLoadFromFile() {
+    public void dictionaryLoadFromFile(String pathFile) {
 
         try {
-            String pathFile = "/data/words.txt";
             InputStream is = Dictionary.class.getResourceAsStream(pathFile);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -27,8 +32,15 @@ public class Dictionary {
                 if (inputLine.equals(""))
                     continue;
 
-                Word newWord = new Word(words[0], words[1] , words[2]);
-                dictionary.addWord(newWord);
+                if (words.length > 2) {
+                    Word newWord = new Word(words[0], words[1] , words[2]);
+                    addWord(newWord);
+
+                } else if (words.length == 2) {
+                    Word newWord = new Word(words[0], words[1]);
+                    addWord(newWord);
+                }
+
 
                 inputLine = reader.readLine();
             }
@@ -38,32 +50,38 @@ public class Dictionary {
             System.out.println("Could not find file.");
         }
     }
+    public void dictionaryLoadFromFile() {
+        this.dictionaryLoadFromFile("/data/words.txt");
+    }
 
 
     /**
      * write data to a file.
-     * @param pathFile
      */
-    public void dictionarySaveToFile(String pathFile) {
+    public void dictionarySaveToFile() {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(new File(pathFile)));
+            URL resourceUrl = getClass().getResource("/data/backUp.txt");
 
-            for (Word word : dictionary.getDictionaryListWords()) {
+            String path = resourceUrl.getPath();
+
+            OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(new File(path)), StandardCharsets.UTF_8);
+            BufferedWriter writer = new BufferedWriter(os);
+            /*ArrayList<Word> words = this.getDictionaryListWords();
+            for (Word word : words) {
                 writer.write(word.getSpelling() + "\t");
                 writer.write(word.getPronunciation() + "\t");
                 writer.write(word.getMeaning() + "\n");
-            }
-
+            }*/
+            writer.write("helloo");
+            writer.newLine();
+            writer.append("hello");
             writer.flush();
             writer.close();
-        }
-        catch (IOException exception) {
-            System.out.println("An error occur.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void dictionarySaveToFile() {
-        this.dictionarySaveToFile("/data/exportFile.txt");
-    }
 
 }
