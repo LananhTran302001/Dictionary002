@@ -1,2 +1,14 @@
-helloo
-hello
+eighkt	hei	tam
+eight	hei	tam
+four	for	bon
+fuur	for	bon
+nine	nai	chin
+ninve	nai	chin
+oee	o^n	mot
+one	o^n	mot
+teen	then	muoi
+ten	null	then
+three	thoree	ba
+tto	chu	hai
+ttree	thoree	ba
+two	chu	hai

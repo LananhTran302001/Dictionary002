@@ -1,53 +1,80 @@
 package controller;
 
 import dictionary.Word;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+
 
 public class UpgradeWordPane {
 
-    @FXML
-    private TextField spellingTextField;
+    Word upgradedWord = null;
 
-    @FXML
-    private TextField pronunciationTextField;
+    public Word getAcceptWord(Word currentWord) {
 
-    @FXML
-    private TextField meaningTextArea;
+        upgradedWord = null;
 
-    @FXML
-    private Button upgradeButton;
+        final Stage addWindow = new Stage();
 
-    @FXML
-    private Button cancelButton;
+        addWindow.initModality(Modality.APPLICATION_MODAL);
+        addWindow.setTitle("Upgrade word");
+        addWindow.setMinWidth(300);
 
-    public Word getUpgradeNewWord() {
-        Word word = new Word();
-        word.setSpelling(spellingTextField.getText());
-        word.setPronunciation(pronunciationTextField.getText());
-        word.setMeaning(meaningTextArea.getText());
-        return word;
-    }
+        Label label = new Label("UPGRADE WORD");
+        label.setStyle("-fx-font: 18px System");
 
-    @FXML
-    private void clickLoadAudioFile(ActionEvent event) {
-    }
+        Label ques = new Label("Do you want to upgrade this word ?\n");
 
+        TextField newSpelling = new TextField();
+        newSpelling.setPromptText("Spelling");
+        newSpelling.setText(currentWord.getSpelling());
 
-    @FXML
-    private void clickUpgradeButton(ActionEvent event) {
+        TextField newPronunciation = new TextField();
+        newPronunciation.setPromptText("Pronunciation");
+        newPronunciation.setText(currentWord.getPronunciation());
 
-    }
+        TextField newMeaning = new TextField();
+        newMeaning.setPromptText("Meaning");
+        newMeaning.setText(currentWord.getMeaning());
 
 
-    @FXML
-    private void clickCancel(ActionEvent event) {
-        if (event.getSource() == cancelButton) {
-            Stage stage = (Stage) cancelButton.getScene().getWindow();
-            stage.close();
-        }
+        Button upgradeButton = new Button("Upgrade");
+        upgradeButton.setOnAction(event -> {
+            upgradedWord = new Word(newSpelling.getText(),
+                                    newPronunciation.getText(),
+                                    newMeaning.getText());
+            if (upgradedWord.isEmpty()) {
+                AlertBox alert = new AlertBox();
+                alert.display("Notification","Word is empty! Can not upgrade!");
+            }
+            addWindow.close();
+        });
+
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(event -> addWindow.close());
+
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(cancelButton, upgradeButton);
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, ques, newSpelling, newPronunciation, newMeaning, buttons);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(15, 20, 15, 20));
+
+        Scene scene = new Scene(layout);
+        addWindow.setScene(scene);
+        addWindow.showAndWait();
+
+        return upgradedWord;
     }
 }

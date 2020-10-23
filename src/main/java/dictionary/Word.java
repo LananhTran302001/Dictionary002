@@ -4,6 +4,7 @@ public class Word {
     private String spelling;
     private String pronunciation;
     private String meaning;
+    private boolean fav;
 
     /**
      * constructors.
@@ -14,18 +15,21 @@ public class Word {
     public Word(String spelling, String meaning) {
         this.spelling = spelling;
         this.meaning = meaning;
+        fav = false;
     }
 
     public Word(String spelling, String pronunciation, String meaning) {
         this.spelling = spelling;
         this.pronunciation = pronunciation;
         this.meaning = meaning;
+        fav = false;
     }
 
     public Word(Word other) {
         this.spelling = other.getSpelling();
         this.pronunciation = other.getPronunciation();
         this.meaning = other.getMeaning();
+        this.fav = other.isFav();
     }
 
     /**
@@ -44,6 +48,10 @@ public class Word {
         return meaning;
     }
 
+    public boolean isFav() {
+        return fav;
+    }
+
     public void setSpelling(String name) {
         this.spelling = spelling;
     }
@@ -54,6 +62,10 @@ public class Word {
 
     public void setMeaning(String meaning) {
         this.meaning = meaning;
+    }
+
+    public void setFav(boolean fav) {
+        this.fav = fav;
     }
 
     /**
@@ -69,6 +81,18 @@ public class Word {
         return this.getSpelling().startsWith(other);
     }
 
+
+    /**
+     * check if 2 words are the same.
+     * @param other word input.
+     * @return true if 2 words are the same.
+     */
+    public boolean equalsTo(Word other) {
+        return (spelling == other.getSpelling()
+                && pronunciation == other.getPronunciation()
+                && meaning == other.getMeaning());
+    }
+
     /**
      * check if a word is empty (doesn't have spelling or meaning)
      */
@@ -77,15 +101,22 @@ public class Word {
     }
 
     /**
+     * @return string of word (spelling, pronounce, meaning).
+     */
+    public String toString() {
+        if (this.isEmpty()) {
+            return "*--This word is empty!--*";
+        } else {
+            return "Word: " + getSpelling()
+                    + "\n\t+ " + getPronunciation()
+                    + "\n\t+ " + getMeaning();
+        }
+    }
+
+    /**
      * print out a word.
      */
     public void print() {
-        if (this.isEmpty()) {
-            System.out.println("*--This word is empty--*!");
-        }
-        System.out.print("Word: ");
-        System.out.println(spelling);
-        System.out.println("\t+ " + pronunciation);
-        System.out.println("\t+ " +meaning);
+        System.out.print(toString());
     }
 }

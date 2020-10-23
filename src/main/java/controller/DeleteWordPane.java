@@ -1,61 +1,56 @@
 package controller;
 
+
 import dictionary.Word;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class DeleteWordPane {
 
-    @FXML
-    private Label spellingLabel;
+    boolean deleteAccept = false;
 
-    @FXML
-    private Label pronunciationLabel;
+    public boolean acceptDelete(Word word) {
+        deleteAccept = false;
+        final Stage deleteWindow = new Stage();
 
-    @FXML
-    private Label meaningLabel;
+        deleteWindow.initModality(Modality.APPLICATION_MODAL);
+        deleteWindow.setTitle("Confirm delete");
+        deleteWindow.setMinWidth(300);
 
+        Label label = new Label("DELETE WORD");
+        label.setStyle("-fx-font: 18px System");
 
-    @FXML
-    private Button cancelButton;
+        Label ques = new Label("Are you sure to delete this word ?\n" + word.toString());
 
-    @FXML
-    private Button deleteButton;
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(event -> deleteWindow.close());
 
-    public void clear() {
-        spellingLabel.setText(null);
-        pronunciationLabel.setText(null);
-        meaningLabel.setText(null);
+        Button deleteButton = new Button("Delete");
+        deleteButton.setOnAction(event -> {
+            deleteAccept = true;
+            deleteWindow.close();
+        });
+
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(cancelButton, deleteButton);
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, ques, buttons);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(15, 20, 15, 20));
+
+        Scene scene = new Scene(layout);
+        deleteWindow.setScene(scene);
+        deleteWindow.showAndWait();
+
+        return deleteAccept;
     }
-
-    public void setText(Word word) {
-        this.clear();
-        spellingLabel.setText(word.getSpelling());
-        pronunciationLabel.setText(word.getPronunciation());
-        meaningLabel.setText(word.getMeaning());
-    }
-
-    @FXML
-    private void clickCancelButton(ActionEvent event) {
-        Stage stage = (Stage) cancelButton.getScene().getWindow();
-        stage.close();
-    }
-
-    @FXML
-    private void clickDeleteButton(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/displaySearch.fxml"));
-        Parent scene = (Parent) fxmlLoader.load();
-        SearchPane searchManagement = fxmlLoader.getController();
-        searchManagement.deleteWord();
-        Stage stage = (Stage) cancelButton.getScene().getWindow();
-        stage.close();
-    }
-
 }

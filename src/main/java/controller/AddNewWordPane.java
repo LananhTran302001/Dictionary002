@@ -1,98 +1,77 @@
 package controller;
 
 import dictionary.Word;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 
 public class AddNewWordPane {
 
-    @FXML
-    private TextField spellingTextField;
+    Word newAddedWord = null;
 
-    @FXML
-    private TextField pronounceTextField;
+    public Word getAcceptWord() {
 
-    @FXML
-    private TextArea meaningTextArea;
+        newAddedWord = null;
 
-    @FXML
-    private TextField soundLinkTextField;
+        final Stage addWindow = new Stage();
 
-    @FXML
-    private Button loadLinkButton;
+        addWindow.initModality(Modality.APPLICATION_MODAL);
+        addWindow.setTitle("Add word");
+        addWindow.setMinWidth(300);
 
-    @FXML
-    private Button addingButton;
+        Label label = new Label("ADD NEW WORD");
+        label.setStyle("-fx-font: 18px System");
 
-    @FXML
-    private Button cancelButton;
+        Label ques = new Label("Do you want to add this word ?\n");
+
+        TextField newSpelling = new TextField();
+        newSpelling.setPromptText("Spelling");
+
+        TextField newPronunciation = new TextField();
+        newPronunciation.setPromptText("Pronunciation");
+
+        TextField newMeaning = new TextField();
+        newMeaning.setPromptText("Meaning");
 
 
-    @FXML
-    private void addWord(ActionEvent event) {
-        try {
-            Word newWord = new Word(
-                    spellingTextField.getText(),
-                    pronounceTextField.getText(),
-                    meaningTextArea.getText());
-
-            if (newWord.isEmpty()) {
+        Button addButton = new Button("Add");
+        addButton.setOnAction(event -> {
+            newAddedWord = new Word(newSpelling.getText(),
+                                    newPronunciation.getText(),
+                                    newMeaning.getText());
+            if (newAddedWord.isEmpty()) {
                 AlertBox alert = new AlertBox();
-                alert.display("Notification", "Word is empty! Can not be added!");
-                System.out.println("Word is empty! Can not be added!");
-                return;
+                alert.display("Notification","Word is empty! Can not add!");
             }
+            addWindow.close();
+        });
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/displaySearch.fxml"));
-            Parent searchScene = loader.load();
-            SearchPane searchManagement = loader.getController();
-            searchManagement.addWord(newWord);
-            //AlertBox alert = new AlertBox();
-            //alert.display("Notification", "Add word " + newWord.getSpelling() + " successfully.", "OK");
+        Button cancelButton = new Button("Cancel");
+        cancelButton.setOnAction(event -> addWindow.close());
 
+        HBox buttons = new HBox(10);
+        buttons.setAlignment(Pos.CENTER);
+        buttons.getChildren().addAll(cancelButton, addButton);
 
-        } catch (Exception e) {
-            System.out.println("Can not add word!");
-            AlertBox alert = new AlertBox();
-            alert.display("Notification", "Error! Can not add new word!");
-            System.out.println("Error! Can not add new word!");
-        }
-        this.clear();
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label, ques, newSpelling, newPronunciation, newMeaning, buttons);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(15, 20, 15, 20));
+
+        Scene scene = new Scene(layout);
+        addWindow.setScene(scene);
+        addWindow.showAndWait();
+
+        return newAddedWord;
     }
-
-
-    @FXML
-    public void cancel(ActionEvent event) {
-        if (event.getSource() == cancelButton) {
-            Stage stage = (Stage) cancelButton.getScene().getWindow();
-            stage.close();
-        }
-    }
-
-    @FXML
-    void upSoundFile(ActionEvent event) {
-
-    }
-
-    public void clear() {
-        spellingTextField.clear();
-        pronounceTextField.clear();
-        meaningTextArea.clear();
-    }
-
 }

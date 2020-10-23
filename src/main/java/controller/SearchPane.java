@@ -1,6 +1,7 @@
 package controller;
 
 import dictionary.Dictionary;
+import dictionary.DictionaryManagement;
 import dictionary.Word;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,14 +27,15 @@ public class SearchPane implements Initializable {
 
     private Dictionary dictionary = new Dictionary();
 
+    private DictionaryManagement favouriteWords = new DictionaryManagement();
+
     private Word currentWord = new Word();
+
+    private boolean notifyAvailable = true;
 
     // search
     @FXML
     private TextField searchTextField;
-
-    @FXML
-    private Button searchButton;
 
     @FXML
     private ListView<String> hintWordsView;
@@ -51,61 +53,82 @@ public class SearchPane implements Initializable {
     @FXML
     private Button playAudioButton;
 
-    //@FXML
-    //private ToggleButton favoriteButton;
+    @FXML
+    private Button ggTransButton;
 
+    @FXML
+    private ToggleButton favouriteButton;
 
     // edit
     @FXML
-    private Button upgradeButton;
+    private Button addButton;
 
     @FXML
     private Button deleteButton;
 
     @FXML
-    private Button addButton;
+    private Button upgradeButton;
 
+    // setting
+    @FXML
+    private ToggleButton notifySwitchButton;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        //dictionary.dictionaryLoadFromFile();
+        dictionary.dictionaryLoadFromFile();
         dictionary.dictionarySaveToFile();
-        //loadListView();
-        //stopShowingTranslation();
+        loadListView();
+        stopShowingTranslation();
+        notifySwitchButton.setSelected(false);
     }
 
 
-    // searching methods
+
+    // -------------------------------- SEARCH METHODS ------------------------------------------------- //
+    //                                                                                                   //
+    // ------------------------------------------------------------------------------------------------- //
+
+
+    /**
+     * Execute when user clicks search button (search and display word has spelling
+     * is same as the text typed in searchTextField).
+     * @param event click search button.
+     */
     @FXML
     private void clickSearch(ActionEvent event) {
         try {
-            // get text from textField
             currentWord = this.dictionary.searchWord(searchTextField.getText());
             showTranslation(currentWord);
 
         } catch (Exception e) {
-            System.out.println("Error! Can not search word!");
-            AlertBox alert = new AlertBox();
-            alert.display("Notification", "Error! Can not search word!");
+            createNotifyAlert("Error! Can not search word!");
         }
     }
 
+
+    /**
+     * Execute when user chooses an option in listView (search and display word has spelling
+     * is same as that option).
+     * @param event choose an option in listview.
+     */
     @FXML
     private void clickWordInListView(MouseEvent event) {
         try {
-            // get text from listView
             currentWord = getChosenWord();
             showTranslation(currentWord);
         } catch (Exception e) {
-            System.out.println("Error! Can not search word!");
-            AlertBox alert = new AlertBox();
-            alert.display("Notification", "Error! Can not search word!");
+            createNotifyAlert("Error! Can not search word!");
         }
     }
 
 
+    /**
+     * Execute when user type a key on keyboard.
+     * This method will call the method loadListView to reload the listView shows hint words.
+     * @param event is a KeyEvent (key release).
+     */
     @FXML
     private void handleChangeInput(KeyEvent event) {
         String inputSpelling = searchTextField.getText();
@@ -115,6 +138,10 @@ public class SearchPane implements Initializable {
     }
 
 
+    /**
+     * Find and reload the listView shows hint words of parameter spelling.
+     * @param spelling from searchTextField.
+     */
     public void loadListView(String spelling) {
         try {
             ArrayList<String> hintWordsSpelling = dictionary.searchHintSpelling(spelling);
@@ -130,6 +157,11 @@ public class SearchPane implements Initializable {
         }
     }
 
+    /**
+     * (If loadListView(String spelling) -> find and reload hint words).
+     * Then this method: loadListView() executes when searchTextField is empty.
+     * It will load all words of the dictionary to listView.
+     */
     public void loadListView() {
         try {
             ArrayList<Word> words = dictionary.getDictionaryListWords();
@@ -142,13 +174,15 @@ public class SearchPane implements Initializable {
             hintWordsView.getItems().addAll(list);
 
         } catch (Exception e) {
-            System.out.println("Error! Can not load list view.");
-            AlertBox alert = new AlertBox();
-            alert.display("Notification", "Error! Can not load list view!");
+            createNotifyAlert("Error! Can not load list view.");
         }
     }
 
 
+    /**
+     * Get string name of the option (spelling) is chosen in ListView.
+     * @return string of that option.
+     */
     public String getChosenWordSpelling() {
         try {
             return hintWordsView.getSelectionModel().getSelectedItem();
@@ -159,6 +193,11 @@ public class SearchPane implements Initializable {
 
     }
 
+
+    /**
+     * Find word has spelling = getChosenWordSpelling() in the dictionary.
+     * @return that word.
+     */
     public Word getChosenWord() {
         try {
 
@@ -171,11 +210,16 @@ public class SearchPane implements Initializable {
     }
 
 
+    /**
+     * Convert a list of words to a list of spelling.
+     * @param listWords is input list words.
+     * @return list of spelling = ArrayList <String> listSpelling.
+     */
     private ArrayList<String> convertWordsToSpellings(ArrayList<Word> listWords) {
         if (listWords == null) {
             return null;
         }
-        ArrayList<String> listSpelling = new ArrayList<String>();
+        ArrayList<String> listSpelling = new ArrayList<>();
         for (Word word : listWords) {
             listSpelling.add(word.getSpelling());
         }
@@ -184,14 +228,31 @@ public class SearchPane implements Initializable {
 
 
 
-    // translating methods
+    // -------------------------------- TRANSLATION METHODS -------------------------------------------- //
+    //                                                                                                   //
+    // ------------------------------------------------------------------------------------------------- //
+
+    /**
+     * Clear translation.
+     */
     private void stopShowingTranslation() {
         spellingLabel.setText(null);
         pronunciationLabel.setText(null);
         meaningLabel.setText(null);
+        playAudioButton.setVisible(false);
+        favouriteButton.setVisible(false);
+        ggTransButton.setVisible(false);
+        deleteButton.setDisable(true);
+        upgradeButton.setDisable(true);
+
     }
 
 
+    /**
+     * Display translation.
+     * This method is called when user click an option in listView or click searchButton.
+     * @param translatedWord is a word input.
+     */
     public void showTranslation(Word translatedWord) {
         try {
             if (translatedWord == null || translatedWord.isEmpty()) {
@@ -201,80 +262,148 @@ public class SearchPane implements Initializable {
                 spellingLabel.setText(translatedWord.getSpelling());
                 pronunciationLabel.setText(translatedWord.getPronunciation());
                 meaningLabel.setText(translatedWord.getMeaning());
+                playAudioButton.setVisible(true);
+                favouriteButton.setVisible(true);
+                favouriteButton.setSelected(translatedWord.isFav());
+                ggTransButton.setVisible(true);
+                deleteButton.setDisable(false);
+                upgradeButton.setDisable(false);
             }
 
         } catch (Exception e) {
-            System.out.println("Error! Can not show translation.");
+            createNotifyAlert("Error! Can not show translation!");
         }
     }
 
+
+    /**
+     * Play audio of the word is being translated.
+     * @param event when user click audioButton.
+     */
     @FXML
     private void clickPlayAudio(ActionEvent event) {
     }
 
 
-    // edit methods
+    /**
+     * Add or delete the word being translated to/from favourite words.
+     * @param event when user click favouriteButton
+     */
     @FXML
-    private void clickDeleteButton(ActionEvent event) {
-        if (currentWord == null || currentWord.isEmpty()) {
-            AlertBox alertNull = new AlertBox();
-            alertNull.display("Notification", "There is no word to delete.");
-            return;
-        }
-        try {
-            openNewWindow("Delete", "/view/displayDeleteWord.fxml");
-        } catch (Exception e) {
-            System.out.println("Error! Can not delete word.");
-            AlertBox alertNull = new AlertBox();
-            alertNull.display("Notification", "Error! Can not delete word!");
+    private void clickFavour(MouseEvent event) {
+        if (favouriteButton.isSelected()) {
+            currentWord.setFav(true);
+            favouriteWords.addWord(currentWord);
+            createNotifyAlert("*Added word: \n\t" + currentWord.getSpelling() + "\nTo favourite list.");
+        } else {
+            favouriteWords.deleteWord(currentWord);
+            currentWord.setFav(false);
+            createNotifyAlert("*Removed word: \n\t" + currentWord.getSpelling() + "\nFrom favourite list.");
         }
     }
 
+    /**
+     * Using google API to search word.
+     * @param event when user click ggTransButton.
+     */
+    @FXML
+    private void clickGGTrans(ActionEvent event) {
+
+    }
+
+    // ----------------------------------- EDITING METHODS --------------------------------------------- //
+    //                                                                                                   //
+    // ------------------------------------------------------------------------------------------------- //
+
+
+
+    @FXML
+    private void clickDeleteButton(ActionEvent event) {
+        if (currentWord == null || currentWord.isEmpty()) {
+            createNotifyAlert("There is no such word to delete!");
+            return;
+        }
+        try {
+            boolean del = new DeleteWordPane().acceptDelete(currentWord);
+            if (del) {
+                this.dictionary.deleteWord(currentWord);
+                loadListView();
+                createNotifyAlert("Deleted successfully.");
+            }
+        } catch (Exception e) {
+            createNotifyAlert("Error! Can not delete word!");
+        }
+    }
+
+
+
     @FXML
     private void clickAddButton(ActionEvent event) {
-        openNewWindow("Add", "/view/displayAddWord.fxml");
+        try {
+
+            Word newWord = new AddNewWordPane().getAcceptWord();
+
+            if (newWord != null && !newWord.isEmpty()) {
+                this.dictionary.addWord(newWord);
+                loadListView();
+                createNotifyAlert("Added successfully.");
+            }
+
+        } catch (Exception e) {
+            createNotifyAlert("Error! Can not add word!");
+        }
     }
 
     @FXML
     private void clickUpgradeButton(ActionEvent event) {
-        openNewWindow("Upgrade", "/view/displayUpgradeWord.fxml");
-    }
-
-    private void openNewWindow(String title, String pathFxml) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(pathFxml));
-            Parent scene = (Parent) fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.setTitle(title);
-            stage.setScene(new Scene(scene));
-            stage.show();
 
+            Word newWord = new UpgradeWordPane().getAcceptWord(currentWord);
+
+            if (newWord != null && !newWord.isEmpty()) {
+
+                if (currentWord.equalsTo(newWord)) {
+                    createNotifyAlert("Word was not changed!");
+                    return;
+                }
+
+                this.dictionary.upgradeWord(currentWord.getSpelling(), newWord);
+                reset();
+                createNotifyAlert("Upgrade successfully.");
+            }
         } catch (Exception e) {
-            System.out.println("Error! Can not load new window.");
-            AlertBox alert = new AlertBox();
-            alert.display("Notification", "Error! Can not load new window!");
+            createNotifyAlert("Error! Can not upgrade word!");
         }
     }
 
-    // called back, newWord is legal for sure
-    public void addWord(Word newWord) {
-        dictionary.addWord(newWord);
-        this.reset();
-    }
-
-    public void deleteWord() {
-        dictionary.deleteWord(currentWord);
-        this.reset();
-    }
-
-    public void upgradeWord(String oldWord, Word newWord) {
-        dictionary.upgradeWord(oldWord, newWord);
-        this.reset();
-    }
-
     public void reset() {
-        //dictionary.dictionarySaveToFile();
-        //dictionary.dictionaryLoadFromFile("/data/u.txt");
-        loadListView(searchTextField.getText());
+        dictionary.dictionarySaveToFile();
+        //dictionary.dictionaryLoadFromFile();
+        loadListView();
+    }
+
+    // ----------------------------------- SETTING METHODS --------------------------------------------- //
+    //                                                                                                   //
+    // ------------------------------------------------------------------------------------------------- //
+
+
+
+
+    @FXML
+    private void clickSaveButton(ActionEvent event) {
+        this.dictionary.dictionarySaveToFile();
+    }
+
+    @FXML
+    private void switchNotification(MouseEvent event) {
+        notifyAvailable = !notifySwitchButton.isSelected();
+    }
+
+    public void createNotifyAlert(String message) {
+        if (notifyAvailable) {
+            AlertBox alert = new AlertBox();
+            alert.display("Notification", message);
+        }
+        System.out.println(message);
     }
 }

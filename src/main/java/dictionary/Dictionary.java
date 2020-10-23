@@ -58,23 +58,20 @@ public class Dictionary extends DictionaryManagement {
     /**
      * write data to a file.
      */
-    public void dictionarySaveToFile() {
+    public void dictionarySaveToFile(String pathFile) {
         try {
-            URL resourceUrl = getClass().getResource("/data/backUp.txt");
+            URL resourceUrl = getClass().getResource(pathFile);
 
             String path = resourceUrl.getPath();
 
             OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(new File(path)), StandardCharsets.UTF_8);
             BufferedWriter writer = new BufferedWriter(os);
-            /*ArrayList<Word> words = this.getDictionaryListWords();
+            ArrayList<Word> words = this.getDictionaryListWords();
             for (Word word : words) {
                 writer.write(word.getSpelling() + "\t");
                 writer.write(word.getPronunciation() + "\t");
                 writer.write(word.getMeaning() + "\n");
-            }*/
-            writer.write("helloo");
-            writer.newLine();
-            writer.append("hello");
+            }
             writer.flush();
             writer.close();
 
@@ -83,5 +80,7 @@ public class Dictionary extends DictionaryManagement {
         }
     }
 
-
+    public void dictionarySaveToFile() {
+        this.dictionarySaveToFile("/data/backUp.txt");
+    }
 }
