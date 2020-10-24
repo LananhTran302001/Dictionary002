@@ -124,12 +124,13 @@ public class SearchPane implements Initializable {
 
     @FXML
     private void clickFavOption(ActionEvent event) {
-        if (menuDictButton.getText() != "Favourite") {
-            menuDictButton.setText("Favourite");
-            dictionary.dictionaryLoadFromFile("/data/favdict.txt");
-            loadListView();
-            stopShowingTranslation();
-        }
+
+        menuDictButton.setText("Favourite");
+        //dictionary.dictionaryLoadFromFile("/data/favdict.txt");
+        dictionary.loadFromOtherDictionaryManagement(favouriteWords);
+        loadListView();
+        stopShowingTranslation();
+
     }
 
 

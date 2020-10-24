@@ -189,4 +189,8 @@ public class Dictionary extends DictionaryManagement {
     public void dictionaryVESaveToFile() {
         this.dictionaryVESaveToFile("/data/vnedictBU.txt");
     }
+
+    public void dictionaryLoadFromManagement(DictionaryManagement other) {
+        loadFromOtherDictionaryManagement(other);
+    }
 }

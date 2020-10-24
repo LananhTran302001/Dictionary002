@@ -13,6 +13,10 @@ public class DictionaryManagement {
         ArrayList<Word> listWords = new ArrayList<Word>();
     }
 
+    public void loadFromOtherDictionaryManagement(DictionaryManagement other) {
+        this.listWords = other.getDictionaryListWords();
+    }
+
     /**
      * getter.
      * @return list of words in dictionary.
