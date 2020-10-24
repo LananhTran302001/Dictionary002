@@ -302,5 +302,15 @@ public class DictionaryManagement {
     }
 
 
+    /**
+     * Remove all words in the dictionary.
+     */
+    public void clearDictionary() {
+        try {
+            listWords.clear();
+        } catch (Exception exception) {
+            System.out.println("Error! Can not clear dictionary!");
+        }
+    }
 }
 

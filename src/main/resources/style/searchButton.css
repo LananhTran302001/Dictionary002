@@ -1,0 +1,9 @@
+.button {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+}
+
+.button:hover {
+    -fx-cursor: HAND;
+}

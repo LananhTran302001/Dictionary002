@@ -15,6 +15,7 @@ VBox {
     -fx-border-color: #fff;
     -fx-background-color: #a0d2eb;
     -fx-text-fill: #111;
+    -fx-cursor: HAND;
 }
 
 

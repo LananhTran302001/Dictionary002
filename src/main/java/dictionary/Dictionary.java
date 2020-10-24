@@ -20,6 +20,8 @@ public class Dictionary extends DictionaryManagement {
     public void dictionaryLoadFromFile(String pathFile) {
 
         try {
+            clearDictionary();
+
             InputStream is = Dictionary.class.getResourceAsStream(pathFile);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -71,6 +73,8 @@ public class Dictionary extends DictionaryManagement {
      */
     public void dictionaryVELoadFromFile(String pathFile) {
         try {
+            clearDictionary();
+
             System.out.println("Start load VE file.");
 
             InputStream is = Dictionary.class.getResourceAsStream(pathFile);

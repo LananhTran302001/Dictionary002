@@ -2,10 +2,18 @@
     -fx-border-color: #fff;
     -fx-border-radius: 100%;
     -fx-background-color: transparent;
+    -fx-text-fill: #fff;
+    -fx-border-width: 1px;
 }
 
-toggle-button:hover {
-    -fx-border-color: #fff;
-    -fx-border-radius: 100%;
-    -fx-background-color: #9bc400;
+.toggle-button:hover {
+    -fx-border-color: #cc99ff;
+    -fx-border-width: 3px;
+    -fx-cursor: HAND;
+}
+
+.toggle-button:selected {
+    -fx-border-color: #ff6600;
+    -fx-border-width: 2px;
+    -fx-text-fill: #111;
 }

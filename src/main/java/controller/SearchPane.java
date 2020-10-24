@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import services.TextToSpeech;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,6 +30,20 @@ public class SearchPane implements Initializable {
     private Word currentWord = new Word();
 
     private boolean notifyAvailable = true;
+
+    // menu dictionaries
+    @FXML
+    private MenuButton menuDictButton;
+
+    @FXML
+    private MenuItem evOption;
+
+    @FXML
+    private MenuItem veOption;
+
+    @FXML
+    private MenuItem favouriteOp;
+
 
     // search
     @FXML
@@ -76,11 +91,46 @@ public class SearchPane implements Initializable {
 
         dictionary.dictionaryLoadFromFile();
         //dictionary.dictionarySaveToFile();
+        menuDictButton.setText("English - Vietnamese");
         loadListView();
         stopShowingTranslation();
         notifySwitchButton.setSelected(false);
     }
 
+
+    // -------------------------------- GET DICTIONARY ------------------------------------------------- //
+    //                                                                                                   //
+    // ------------------------------------------------------------------------------------------------- //
+
+    @FXML
+    private void clickEVOption(ActionEvent event) {
+        if (menuDictButton.getText() != "English - Vietnamese") {
+            menuDictButton.setText("English - Vietnamese");
+            dictionary.dictionaryLoadFromFile();
+            loadListView();
+            stopShowingTranslation();
+        }
+    }
+
+    @FXML
+    private void clickVEOption(ActionEvent event) {
+        if (menuDictButton.getText() != "Vietnamese - English") {
+            menuDictButton.setText("Vietnamese - English");
+            dictionary.dictionaryVELoadFromFile();
+            loadListView();
+            stopShowingTranslation();
+        }
+    }
+
+    @FXML
+    private void clickFavOption(ActionEvent event) {
+        if (menuDictButton.getText() != "Favourite") {
+            menuDictButton.setText("Favourite");
+            dictionary.dictionaryLoadFromFile("/data/favdict.txt");
+            loadListView();
+            stopShowingTranslation();
+        }
+    }
 
 
     // -------------------------------- SEARCH METHODS ------------------------------------------------- //
@@ -279,6 +329,13 @@ public class SearchPane implements Initializable {
      */
     @FXML
     private void clickPlayAudio(ActionEvent event) {
+        if (menuDictButton.getText() == "Vietnamese - English") {
+            TextToSpeech audio = new TextToSpeech(currentWord.getMeaning());
+            audio.read();
+        } else {
+            TextToSpeech audio = new TextToSpeech(currentWord.getSpelling());
+            audio.read();
+        }
     }
 
 
